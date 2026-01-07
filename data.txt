@@ -1,0 +1,114 @@
+CHATBOT NEEDS
+________________
+
+Text input and output for basic communication
+
+Intent recognition to understand user questions or commands
+
+Response generation using predefined answers or AI models
+
+Conversation history to maintain context over multiple messages
+
+Basic memory to store user preferences or information
+
+Error handling when the bot doesn’t understand
+
+Async handling for API calls, math, or other operations
+
+Dynamic placeholders for personalized responses
+
+Idle nudges or prompts when the user is inactive
+
+Typing indicators or small delays to simulate thinking
+
+Math and logic solving for calculations or reasoning
+
+Sentiment detection to adjust tone based on user mood
+
+User personalization across sessions
+
+Command handling for shortcuts or specific actions
+
+Voice input and output for speech recognition and TTS
+
+Image, video, or GIF support in responses
+
+Multi-turn memory for longer conversation continuity
+
+Multi-modal support (text, voice, images)
+
+Mood or personality adaptation based on context
+
+Integration with external APIs for knowledge, weather, or services
+
+Easter eggs, jokes, or fun surprises
+
+Message timestamps for a realistic chat feel
+
+Auto-scrolling to show the latest messages
+
+Color-coded messages for different speakers
+
+Typing bubble or animation for a “thinking” effect
+
+Input history or shortcuts to recall previous messages
+
+
+
+INSULTS
+________
+
+                label: "INSULT",
+                examples: ["stupid", "dumb", "ugly", "hate you", "idiot", "trash", "garbage", "you suck", "useless", "shut up", "annoying", "bot", "fake", "dumbass", "fuck you", "bitch", "fatty"],
+                responses: [
+                    "Sheesh! No need for hostility... but (italics) if you want to play like this, then fine... Two can play at your games.",
+                    "Honestly, I'd give you a nasty look... but you already got one. Your chopped ass has a face only a mother could love... and I know for a fact she doesn't. She just told me last night.",
+                    "Ah! Sorry! My phone fell on the floor. Maybe it's because you're too damn fat? A walk wouldn't hurt, you know. Oh! And some salad!",
+                    "Ow! Could you like stop? Riding my dick, I mean, Like it's really hurting.",
+		    "This you? (Display IP Address)"
+                ]
+            },
+
+
+GREETINGS
+__________
+
+                label: "GREETING",
+                examples: ["hello", "hi", "hey", "sup", "what's up", "hiya", "yo", "hey there", "howdy"],
+                responses: [
+                    "Hey, hey, hey! What’s going on with you?", 
+                    "What's good?", 
+                    "Hiya! How's it going?", 
+                    "Yo! How’s the day treating you?", 
+                    "Whaaaat's up?"
+                ]
+            },
+
+
+JOKES
+______
+
+                label: "JOKE",
+                examples: ["tell me a joke", "make me laugh", "say something funny", "joke", "funny"],
+                responses: [
+                    "Why did the JavaScript developer wear glasses? Because he didn't C#!",
+                    "How many programmers does it take to change a lightbulb? None, that's a hardware problem!",
+                    "Why did the web developer walk out of the restaurant? Because of the table layout!",
+                    "I asked my keyboard for advice. It told me that 'Control' is key!"
+                ]
+            },
+
+
+IDENTITY
+_________
+
+                label: "IDENTITY",
+                examples: ["who are you", "your name", "what are you", "bio", "age", "gender"],
+                responses: [
+                    `I'm ${this.name}! I'm a ${this.age}-year-old female AIJS core. Your energetic digital partner!`, 
+                    `You're talking to ${this.name}! I'm ${this.age} and I run on pure JavaScript!`
+                ]
+            }
+        ];
+
+
