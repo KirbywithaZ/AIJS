@@ -1,7 +1,7 @@
 // =======================================================================================================================================================
-// AIJS (Artificially Intelligent JavaScript)
+// AIJS / Artificially Intelligent JavaScript System
 // Model Version: 1.0.1
-// Characters: "Static" and "Steele"
+// Characters: "Static" and "Steele". A third character has been conceptualized but not planned.
 // =======================================================================================================================================================
 
 // AIJS simulates an LLM-like generative experience using a 
