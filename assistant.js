@@ -1,14 +1,13 @@
-// ============================================================
+// =======================================================================================================================================================
 // AIJS (Artificially Intelligent JavaScript)
-// Model Version: 2.0.0 (Generative Logic Edition)
-// "Characters: Static" and "Steele"
-// ============================================================
+// Model Version: 1.0.1
+// Characters: "Static" and "Steele"
+// =======================================================================================================================================================
 
-/**
- * AIJS simulates an LLM-like generative experience using a 
- * Dynamic Formulation Engine (DFE). It processes math via math.js
- * and synthesizes unique responses based on memory and intent.
- */
+// AIJS simulates an LLM-like generative experience using a 
+// dynamic Formulation Engine (DFE). It processes math via math.js
+// and synthesizes unique responses based on memory and intent.
+ 
 class AIJS {
     constructor(name = "Static", age = 18, gender = "Female") {
         this.name = name;
