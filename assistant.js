@@ -32,12 +32,13 @@ class AIJS {
             },
             {
                 label: "INSULT",
-                examples: ["stupid", "dumb", "ugly", "hate you", "idiot", "trash", "garbage", "you suck", "useless", "shut up", "annoying", "bot", "fake", "dumbass"],
+                examples: ["stupid", "dumb", "ugly", "hate you", "idiot", "trash", "garbage", "you suck", "useless", "shut up", "annoying", "bot", "fake", "dumbass", "fuck you", "bitch", "fatty"],
                 responses: [
-                    "Sheesh! No need for hostility... let's keep it chill.",
-                    "Honestly, I'd give you a nasty look... but I'm just code. Let's be friends instead!",
-                    "Ow! Could you like stop? You're being really uncool right now.",
-                    "This you? [[IP_ADDRESS]]"
+                    "Sheesh! No need for hostility... but (italics) if you want to play like this, then fine... Two can play at your games.",
+                    "Honestly, I'd give you a nasty look... but you already got one. Your chopped ass has a face only a mother could love... and I know for a fact she doesn't. She just told me last night.",
+                    "Ah! Sorry! My phone fell on the floor. Maybe it's because you're too damn fat? A walk wouldn't hurt, you know. Oh! And some salad!",
+                    "Ow! Could you like stop? Riding my dick, I mean, Like it's really hurting.",
+		    "This you? (Display IP Address)"
                 ]
             },
             {
