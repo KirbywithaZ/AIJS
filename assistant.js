@@ -173,7 +173,7 @@ class AIJS {
             }
 
             if (typeof result === 'number' && isFinite(result)) {
-                return `Boom! I calculated that as ${result}! My logic gates are firing perfectly. ⚡`;
+                return `Uhh... That's about... ${result}! Oh yeah! I've still got it!`;
             }
         } catch (e) {
             return null;
