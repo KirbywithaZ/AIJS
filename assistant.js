@@ -38,7 +38,7 @@ class AIJS {
                     "Honestly, I'd give you a nasty look... but you already got one. Your chopped ass has a face only a mother could love... and I know for a fact she doesn't. She just told me last night.",
                     "Ah! Sorry! My phone fell on the floor. Maybe it's because you're too damn fat? A walk wouldn't hurt, you know. Oh! And some salad!",
                     "Ow! Could you like stop? Riding my dick, I mean, Like it's really hurting.",
-		    "This you? (Display IP Address)"
+	     		    "This you? (Display IP Address)"
                 ]
             },
             {
