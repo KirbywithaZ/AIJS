@@ -1,144 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Static AIJS Chat</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #121212; /* Darker theme to match Static's vibe */
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-      color: white;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Ultimate JS AI</title>
 
-    #chat {
-      width: 600px;
-      height: 450px;
-      background: #1e1e1e;
-      border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0,255,255,0.1);
-      padding: 15px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      border: 1px solid #333;
-    }
+    <script src="https://unpkg.com/brain.js"></script>
 
-    .message {
-      max-width: 80%;
-      padding: 10px 14px;
-      margin: 8px 0;
-      border-radius: 15px;
-      word-wrap: break-word;
-      line-height: 1.4;
-    }
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
 
-    .user {
-      background: #007aff;
-      align-self: flex-end;
-      color: #fff;
-      border-bottom-right-radius: 2px;
-    }
+    <script src="https://unpkg.com/ml5@1.2.1/dist/ml5.min.js"></script>
 
-    .bot {
-      background: #333;
-      align-self: flex-start;
-      color: #00ffcc;
-      border-bottom-left-radius: 2px;
-      border: 1px solid #00ffcc;
-    }
+    <script src="https://unpkg.com/compromise"></script>
 
-    #controls {
-      margin-top: 15px;
-      display: flex;
-      gap: 10px;
-    }
+    <script src="https://cdn.jsdelivr.net/npm/@nlpjs/nlp@4.27.0/dist/bundle.min.js"></script>
 
-    #input {
-      width: 460px;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #444;
-      background: #222;
-      color: white;
-      font-size: 1rem;
-    }
+    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
 
-    button {
-      padding: 8px 20px;
-      border-radius: 8px;
-      background: #00ffcc;
-      color: #000;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover { background: #00ccaa; }
-  </style>
 </head>
-<body>
-
-  <h1>Static ⚡ <small style="font-size: 0.5em;">AIJS Core</small></h1>
-
-  <div id="chat"></div>
-
-  <div id="controls">
-    <input type="text" id="input" placeholder="Say something electric...">
-    <button id="send">Send</button>
-  </div>
-
-  <script src="assistant.js"></script>
-
-  <script>
-    // Wake up Static
-    const assistant = new AIJS();
-    
-    const chat = document.getElementById('chat');
-    const input = document.getElementById('input');
-    const send = document.getElementById('send');
-
-    // Add message to screen
-    function addMessage(text, sender) {
-      const div = document.createElement('div');
-      div.className = `message ${sender}`;
-      div.textContent = text;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-    }
-
-    // Handle sending
-async function handleSend() {
-  const text = input.value.trim();
-  if (!text) return;
-
-  addMessage(text, 'user');
-
-  // Wait for the AI to finish thinking
-  const response = await assistant.think(text);
-
-  // Small delay to simulate "thinking" visually
-  setTimeout(() => {
-    addMessage(response, 'bot');
-  }, 400);
-
-  input.value = '';
-  input.focus();
-}
-
-
-send.addEventListener('click', () => handleSend());
-input.addEventListener('keypress', e => { if (e.key === 'Enter') handleSend(); });
-
-    // Idle Timer Check (every 5 seconds)
-    setInterval(() => {
-      const idleMsg = assistant.checkIdle();
-      if (idleMsg) addMessage(idleMsg, 'bot');
-    }, 5000);
-  </script>
-
-</body>
-</html>
