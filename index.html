@@ -6,92 +6,139 @@
     <title>AIJS - Artificially Intelligent Javascript System</title>
 
     <script src="https://unpkg.com/brain.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://unpkg.com/ml5@1.2.1/dist/ml5.min.js"></script>
     <script src="https://unpkg.com/compromise"></script>
 
     <style>
-        body { background: #0a0a0a; color: #00ff41; font-family: 'Courier New', monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        #aijs-container { width: 90%; max-width: 700px; height: 80vh; border: 2px solid #00ff41; display: flex; flex-direction: column; background: #000; box-shadow: 0 0 20px #004400; }
-        #header { padding: 15px; border-bottom: 1px solid #00ff41; text-align: center; font-weight: bold; font-size: 1.2em; }
-        #display { flex-grow: 1; overflow-y: auto; padding: 20px; font-size: 14px; scroll-behavior: smooth; }
+        * { box-sizing: border-box; }
+        body { 
+            background: #0a0a0a; color: #00ff41; 
+            font-family: 'Courier New', monospace; 
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; margin: 0; overflow: hidden;
+        }
+        #aijs-container { 
+            width: 95%; max-width: 800px; height: 85vh; 
+            border: 2px solid #00ff41; display: flex; flex-direction: column; 
+            background: #000; box-shadow: 0 0 20px #004400; 
+        }
+        #header { 
+            padding: 15px; border-bottom: 1px solid #00ff41; 
+            text-align: center; font-weight: bold; font-size: 1.2em; 
+            background: #050505; letter-spacing: 3px;
+        }
+        #display { 
+            flex-grow: 1; overflow-y: auto; padding: 20px; 
+            font-size: 14px; scroll-behavior: smooth;
+        }
         .input-area { display: flex; border-top: 1px solid #00ff41; background: #050505; }
-        #user-input { flex-grow: 1; background: transparent; border: none; color: #fff; padding: 15px; outline: none; font-family: inherit; }
-        #send-btn { background: #00ff41; color: #000; border: none; padding: 0 25px; cursor: pointer; font-weight: bold; }
-        .bot-msg { color: #00ff41; margin-bottom: 15px; }
-        .user-msg { color: #fff; margin-bottom: 15px; opacity: 0.8; }
+        #user-input { 
+            flex-grow: 1; background: transparent; border: none; 
+            color: #fff; padding: 20px; outline: none; 
+            font-family: inherit; font-size: 16px;
+        }
+        #send-btn { 
+            background: #00ff41; color: #000; border: none; 
+            padding: 0 30px; cursor: pointer; font-weight: bold;
+            transition: 0.3s;
+        }
+        #send-btn:hover { background: #fff; }
+        .bot-msg { color: #00ff41; margin-bottom: 15px; line-height: 1.4; }
+        .user-msg { color: #888; margin-bottom: 15px; }
+        .system-note { color: #ffff00; font-size: 10px; margin-bottom: 10px; text-transform: uppercase; }
+        
+        /* Scrollbar */
+        #display::-webkit-scrollbar { width: 6px; }
+        #display::-webkit-scrollbar-thumb { background: #00ff41; }
     </style>
 </head>
 <body>
 
 <div id="aijs-container">
-    <div id="header">AIJS SYSTEM_v1.0</div>
+    <div id="header">AIJS // CORE_TERMINAL</div>
     <div id="display">
-        <div class="bot-msg">AIJS: Terminal Ready. Status: ONLINE</div>
+        <div class="bot-msg">AIJS: [SYSTEM READY] - Awaiting instructions...</div>
     </div>
     <div class="input-area">
-        <input type="text" id="user-input" placeholder="Enter command or message..." autofocus>
-        <button id="send-btn">EXECUTE</button>
+        <input type="text" id="user-input" placeholder="Type command..." autofocus autocomplete="off">
+        <button id="send-btn">RUN</button>
     </div>
 </div>
 
 <script>
-    // 1. Initialize Brain.js (The Neural Network)
+    // 1. BRAIN.JS SETUP (Intent Classification)
     const net = new brain.NeuralNetwork();
     
-    // Train the network on simple "mood" patterns
-    net.train([
-        { input: { happy: 1, great: 1 }, output: { positive: 1 } },
-        { input: { sad: 1, bad: 1, tired: 1 }, output: { negative: 1 } },
-        { input: { hello: 1, hi: 1 }, output: { greeting: 1 } }
-    ]);
+    // We convert text into a word-count object for the Neural Net
+    function encode(text) {
+        const words = text.toLowerCase().replace(/[^\w\s]/g, '').split(' ');
+        const obj = {};
+        words.forEach(word => obj[word] = 1);
+        return obj;
+    }
+
+    // Training Data: Intent Mapping
+    const trainingData = [
+        { input: encode("hello hi hey greetings"), output: { greet: 1 } },
+        { input: encode("how are you status check"), output: { status: 1 } },
+        { input: encode("who are you identity"), output: { identity: 1 } },
+        { input: encode("help manual commands"), output: { help: 1 } },
+        { input: encode("bye exit quit"), output: { bye: 1 } }
+    ];
+
+    net.train(trainingData);
+
+    // 2. RESPONSE DICTIONARY
+    const responses = {
+        greet: ["Connection established. Hello.", "Greetings, User.", "AIJS is online and listening."],
+        status: ["All systems operational. Memory usage stable.", "Core temperature nominal. 100% capacity.", "Status: Optimal."],
+        identity: ["I am AIJS: The Artificially Intelligent Javascript System.", "I am a browser-based intelligence built on JS."],
+        help: ["COMMANDS: [STATUS], [IDENTITY], [NAME DETECTION]. Try: 'My name is Alex'"],
+        bye: ["Terminating session. Goodbye.", "Going to standby mode.", "System out."],
+        unknown: ["Input not recognized. Expanding data parameters...", "Query does not match known patterns."]
+    };
 
     const display = document.getElementById('display');
     const input = document.getElementById('user-input');
     const btn = document.getElementById('send-btn');
 
-    async function processAI() {
+    async function handleCommunication() {
         const text = input.value.trim();
         if (!text) return;
 
-        // Show User Message
+        // Display User input
         display.innerHTML += `<div class="user-msg">> ${text}</div>`;
         input.value = '';
 
-        // 2. Use 'Compromise' for NLP (Named Entity Recognition)
+        // A. Linguistic Extraction (Compromise.js)
         let doc = nlp(text);
-        let hasName = doc.people().text();
-        let isQuestion = doc.questions().found;
+        let foundName = doc.people().text();
 
-        // 3. Simple Brain.js Logic (Basic sentiment/pattern)
-        const words = text.toLowerCase().split(' ');
-        const inputObj = {};
-        words.forEach(w => inputObj[w] = 1);
-        const prediction = brain.likely(inputObj, net);
+        // B. Intent Prediction (Brain.js)
+        const prediction = brain.likely(encode(text), net);
+        
+        let finalReply = "";
 
-        // 4. Generate Response
-        let response = "COMMAND NOT RECOGNIZED. ANALYZING...";
-
-        if (hasName) {
-            response = `ENTITY DETECTED: [${hasName}]. RECORDING DATA.`;
-        } else if (prediction === 'greeting') {
-            response = "GREETINGS. AIJS CORE IS ACTIVE.";
-        } else if (prediction === 'positive') {
-            response = "OPTIMISM DETECTED. SYSTEM STABILITY: 100%.";
-        } else if (isQuestion) {
-            response = "QUERY RECEIVED. SEARCHING ARCHIVES...";
+        // Logic Hierarchy
+        if (text.toLowerCase() === 'help') {
+            finalReply = responses.help[0];
+        } else if (foundName) {
+            finalReply = `Linguistic analysis complete. Entity detected: [${foundName}]. Hello, ${foundName}.`;
+        } else {
+            const possible = responses[prediction] || responses.unknown;
+            finalReply = possible[Math.floor(Math.random() * possible.length)];
         }
 
-        // Output Bot Message
+        // Output with delay
         setTimeout(() => {
-            display.innerHTML += `<div class="bot-msg">AIJS: ${response}</div>`;
+            display.innerHTML += `<div class="system-note">Processing intent: ${prediction || 'null'}</div>`;
+            display.innerHTML += `<div class="bot-msg">AIJS: ${finalReply}</div>`;
             display.scrollTop = display.scrollHeight;
         }, 500);
     }
 
-    // Event Listeners
-    btn.addEventListener('click', processAI);
-    input.addEventListener('keypress', (e) => { if (e.key === 'Enter') processAI(); });
+    // Listeners
+    btn.onclick = handleCommunication;
+    input.onkeypress = (e) => { if (e.key === 'Enter') handleCommunication(); };
 </script>
 
 </body>
