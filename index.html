@@ -2,73 +2,73 @@
 <html lang="en">
 <head>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Artificially Intelligent Javascript System / Test</title>
+<title>Artificially Intelligent Javascript System / Test</title>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.9.0/math.min.js"></script>
-    <script src="https://unpkg.com/dexie/dist/dexie.js"></script>
-    <script src="https://unpkg.com/meyda/dist/web/meyda.min.js"></script>
-    <script src="https://unpkg.com/rxjs/bundles/rxjs.umd.min.js"></script>
-    <script src="https://unpkg.com/natural/lib/natural.js"></script>
-    <script src="https://unpkg.com/synaptic"></script>
-    <script src="https://unpkg.com/brain.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://unpkg.com/ml5@1.2.1/dist/ml5.min.js"></script>
-    <script src="https://unpkg.com/compromise"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@nlpjs/nlp@4.27.0/dist/bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.9.0/math.min.js"></script>
+<script src="https://unpkg.com/dexie/dist/dexie.js"></script>
+<script src="https://unpkg.com/meyda/dist/web/meyda.min.js"></script>
+<script src="https://unpkg.com/rxjs/bundles/rxjs.umd.min.js"></script>
+<script src="https://unpkg.com/natural/lib/natural.js"></script>
+<script src="https://unpkg.com/synaptic"></script>
+<script src="https://unpkg.com/brain.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<script src="https://unpkg.com/ml5@1.2.1/dist/ml5.min.js"></script>
+<script src="https://unpkg.com/compromise"></script>
+<script src="https://cdn.jsdelivr.net/npm/@nlpjs/nlp@4.27.0/dist/bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
 
-    <style>
-        :root {
-            --bg-color: #f0f2f5;
-            --bot-bubble: #ffffff;
-            --user-bubble: #0084ff;
-            --text-main: #1c1e21;
-            --text-alt: #65676b;
-        }
+<style>
+:root {
+    --bg-color: #f0f2f5;
+    --bot-bubble: #ffffff;
+    --user-bubble: #0084ff;
+    --text-main: #1c1e21;
+    --text-alt: #65676b;
+}
 
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-color);
-            margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh;
-        }
+body { 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-color);
+    margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh;
+}
 
-        #chat-container {
-            width: 100%; max-width: 450px; height: 90vh;
-            background: #fff; display: flex; flex-direction: column;
-            box-shadow: 0 12px 28px rgba(0,0,0,0.12); border-radius: 12px; overflow: hidden;
-        }
+#chat-container {
+    width: 100%; max-width: 450px; height: 90vh;
+    background: #fff; display: flex; flex-direction: column;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.12); border-radius: 12px; overflow: hidden;
+}
 
-        #header { padding: 15px; background: #fff; border-bottom: 1px solid #ddd; text-align: center; font-weight: bold; color: var(--text-main); }
+#header { padding: 15px; background: #fff; border-bottom: 1px solid #ddd; text-align: center; font-weight: bold; color: var(--text-main); }
 
-        #display { 
-            flex-grow: 1; overflow-y: auto; padding: 20px; 
-            display: flex; flex-direction: column; gap: 12px;
-            background: #e5ddd5; /* Classic chat background */
-        }
+#display { 
+    flex-grow: 1; overflow-y: auto; padding: 20px; 
+    display: flex; flex-direction: column; gap: 12px;
+    background: #e5ddd5; /* Classic chat background */
+}
 
-        .bubble { 
-            max-width: 80%; padding: 10px 14px; border-radius: 18px; 
-            font-size: 15px; line-height: 1.4; position: relative;
-        }
+.bubble { 
+    max-width: 80%; padding: 10px 14px; border-radius: 18px; 
+    font-size: 15px; line-height: 1.4; position: relative;
+}
 
-        .bot { align-self: flex-start; background: var(--bot-bubble); color: var(--text-main); border-bottom-left-radius: 4px; }
-        .user { align-self: flex-end; background: var(--user-bubble); color: #fff; border-bottom-right-radius: 4px; }
+.bot { align-self: flex-start; background: var(--bot-bubble); color: var(--text-main); border-bottom-left-radius: 4px; }
+.user { align-self: flex-end; background: var(--user-bubble); color: #fff; border-bottom-right-radius: 4px; }
 
-        .system-meta { font-size: 10px; color: var(--text-alt); margin-top: 4px; align-self: flex-start; }
+.system-meta { font-size: 10px; color: var(--text-alt); margin-top: 4px; align-self: flex-start; }
 
-        .input-area { padding: 15px; background: #fff; display: flex; gap: 10px; border-top: 1px solid #ddd; }
-        input { 
-            flex-grow: 1; border: 1px solid #ddd; border-radius: 20px; 
-            padding: 10px 15px; outline: none; font-size: 15px;
-        }
-        button { 
-            background: var(--user-bubble); color: white; border: none; 
-            padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600;
-        }
-    </style>
+.input-area { padding: 15px; background: #fff; display: flex; gap: 10px; border-top: 1px solid #ddd; }
+input { 
+    flex-grow: 1; border: 1px solid #ddd; border-radius: 20px; 
+    padding: 10px 15px; outline: none; font-size: 15px;
+}
+button { 
+    background: var(--user-bubble); color: white; border: none; 
+    padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600;
+}
+</style>
 </head>
 <body>
 
@@ -84,24 +84,29 @@
 </div>
 
 <script>
+let lastBotIntent = null; // remembers last bot intent
 
-    let lastBotIntent = null; // remembers last bot intent
-
-    function isFollowUp(text) {
+// Detect short conversational follow-ups
+function isFollowUp(text) {
     return text.split(" ").length <= 5 &&
            /(and you|you\?|what about you|yourself|are you sure|how are you)/i.test(text);
 }
-    
-    const net = new brain.NeuralNetwork();
-    
-    function encode(text) {
-        const words = text.toLowerCase().replace(/[^\w\s]/g, '').split(' ');
-        const obj = {};
-        words.forEach(word => obj[word] = 1);
-        return obj;
-    }
 
-    // Training with more diversity to prevent false positives
+// Detect math questions
+function isMathQuestion(text) {
+    return /\d+|\+|\-|\*|\/|plus|minus|times|divided|take away/i.test(text);
+}
+
+const net = new brain.NeuralNetwork();
+
+function encode(text) {
+    const words = text.toLowerCase().replace(/[^\w\s]/g, '').split(' ');
+    const obj = {};
+    words.forEach(word => obj[word] = 1);
+    return obj;
+}
+
+// Training Data
 const trainingData = [];
 
 // GREET
@@ -129,109 +134,118 @@ const trainingData = [];
     trainingData.push({ input: encode(word), output: { bye: 1 } });
 });
 
-
-    net.train(trainingData, {
+// Train network
+net.train(trainingData, {
     iterations: 2000,
     errorThresh: 0.005,
-    learningRate: 0.3
-});
-
-    
-    net.train(trainingData, {
-    iterations: 2000,
-    errorThresh: 0.005,
+    learningRate: 0.3,
     log: false
 });
 
-    const responses = {
-        greet: ["Hello there!", "Hi! How's your day going?", "Greetings!"],
-        status: ["All systems nominal.", "I'm running smoothly.", "Everything is working perfectly!"],
-        help: ["I can recognize names and chat with you. Try saying 'My name is John' or asking how I am."],
-        identity: ["I am AIJS, a browser-based AI system.", "You're talking to a JavaScript-powered intelligence."],
-        bye: ["Goodbye! Have a great day.", "See you later!", "Shutting down. Bye!"],
-        fallback: ["I'm not quite sure what you mean. Could you rephrase?", "Hmm, I didn't get that. Can you try saying it differently?"]
-    };
+const responses = {
+    greet: ["Hello there!", "Hi! How's your day going?", "Greetings!"],
+    status: ["All systems nominal.", "I'm running smoothly.", "Everything is working perfectly!"],
+    help: ["I can recognize names and chat with you. Try saying 'My name is John' or asking how I am."],
+    identity: ["I am AIJS, a browser-based AI system.", "You're talking to a JavaScript-powered intelligence."],
+    bye: ["Goodbye! Have a great day.", "See you later!", "Shutting down. Bye!"],
+    fallback: ["I'm not quite sure what you mean. Could you rephrase?", "Hmm, I didn't get that. Can you try saying it differently?"]
+};
 
-    async function handleChat() {
-        const input = document.getElementById('user-input');
-        const display = document.getElementById('display');
-        const text = input.value.trim();
-        if (!text) return;
+async function handleChat() {
+    const input = document.getElementById('user-input');
+    const display = document.getElementById('display');
+    const text = input.value.trim();
+    if (!text) return;
 
-        // Add User Bubble
-        display.innerHTML += `<div class="bubble user">${text}</div>`;
-        input.value = '';
+    // User bubble
+    display.innerHTML += `<div class="bubble user">${text}</div>`;
+    input.value = '';
 
-        // 1. LINGUISTICS
-        let doc = nlp(text);
-        let foundName = doc.people().out('array')[0];
+    // 1️⃣ Name detection
+    let doc = nlp(text);
+    let foundName = doc.people().out('array')[0];
 
-        // 2. BRAIN CONFIDENCE
+    let reply = "";
+    let prediction = "unknown";
+    let highestScore = 0;
+
+    // 2️⃣ Math detection
+    if (isMathQuestion(text)) {
+        try {
+            let sanitized = text
+                .replace(/plus/gi, "+")
+                .replace(/minus|take away/gi, "-")
+                .replace(/times/gi, "*")
+                .replace(/divided by/gi, "/");
+
+            let result = math.evaluate(sanitized);
+            reply = `The answer is ${result}.`;
+            prediction = "math";
+            highestScore = 1;
+        } catch(e) {
+            reply = "I can't solve that one yet, but I'm learning!";
+            prediction = "math";
+            highestScore = 0;
+        }
+    }
+
+    // 3️⃣ Follow-up logic
+    else if (isFollowUp(text) && lastBotIntent) {
+        if (lastBotIntent === "greet") {
+            reply = responses.status[Math.floor(Math.random() * responses.status.length)];
+            prediction = "status";
+            highestScore = 0.8;
+        } else if (lastBotIntent === "status") {
+            reply = responses.status[Math.floor(Math.random() * responses.status.length)];
+            prediction = "status";
+            highestScore = 0.8;
+        }
+    }
+
+    // 4️⃣ Name overrides
+    else if (foundName) {
+        reply = `Nice to meet you, ${foundName}!`;
+        prediction = "identity";
+        highestScore = 0.9;
+    }
+
+    // 5️⃣ Neural network intent
+    else {
         const results = net.run(encode(text));
-        let highestScore = 0;
-        let prediction = 'unknown';
-
         for (let intent in results) {
             if (results[intent] > highestScore) {
                 highestScore = results[intent];
                 prediction = intent;
             }
         }
-
-        // 3. LOGIC HIERARCHY
-        let reply = "";
-
-// CONTEXTUAL FOLLOW-UP
-if (isFollowUp(text) && lastBotIntent) {
-    if (lastBotIntent === "greet") {
-        reply = responses.status[Math.floor(Math.random() * responses.status.length)];
-        prediction = "status";
-        highestScore = 0.8;
-    } else if (lastBotIntent === "status") {
-        reply = responses.status[Math.floor(Math.random() * responses.status.length)];
-        prediction = "status";
-        highestScore = 0.8;
-    }
-}
-
-// NAME DETECTION (OVERRIDES EVERYTHING)
-else if (foundName) {
-    reply = `Nice to meet you, ${foundName}!`;
-    prediction = "identity";
-    highestScore = 0.9;
-}
-
-// NORMAL INTENT RESPONSE
-else if (highestScore > 0.2 && responses[prediction]) {
-    const possible = responses[prediction];
-    reply = possible[Math.floor(Math.random() * possible.length)];
-}
-
-// FALLBACK
-else {
-    reply = responses.fallback[Math.floor(Math.random() * responses.fallback.length)];
-    prediction = "uncertain";
-    highestScore = 0;
-}
-
-        // Add Bot Bubble with Metadata
-        setTimeout(() => {
-            const conf = Math.round(highestScore * 100);
-            display.innerHTML += `
-                <div style="display:flex; flex-direction:column">
-                    <div class="bubble bot">${reply}</div>
-                    <div class="system-meta">
-    Confidence: ${conf}% | Intent: ${highestScore > 0.2 ? prediction : "uncertain"}
-</div>
-
-                </div>`;
-            display.scrollTop = display.scrollHeight;
-            lastBotIntent = prediction;
-        }, 600);
+        if (highestScore > 0.2 && responses[prediction]) {
+            const possible = responses[prediction];
+            reply = possible[Math.floor(Math.random() * possible.length)];
+        } else {
+            reply = responses.fallback[Math.floor(Math.random() * responses.fallback.length)];
+            prediction = "uncertain";
+            highestScore = 0;
+        }
     }
 
-    document.getElementById('send-btn').onclick = handleChat;
-    document.getElementById('user-input').onkeypress = (e) => { if(e.key === 'Enter') handleChat(); };
+    // 6️⃣ Bot bubble
+    setTimeout(() => {
+        const conf = Math.round(highestScore * 100);
+        display.innerHTML += `
+            <div style="display:flex; flex-direction:column">
+                <div class="bubble bot">${reply}</div>
+                <div class="system-meta">Confidence: ${conf}% | Intent: ${highestScore > 0.2 ? prediction : "uncertain"}</div>
+            </div>`;
+        display.scrollTop = display.scrollHeight;
+
+        // 7️⃣ Update last bot intent for context
+        lastBotIntent = prediction;
+    }, 600);
+}
+
+// Event listeners
+document.getElementById('send-btn').onclick = handleChat;
+document.getElementById('user-input').onkeypress = (e) => { if(e.key === 'Enter') handleChat(); };
 </script>
 
 </body>
