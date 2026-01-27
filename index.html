@@ -1,12 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIJS - Modern Chatbot</title>
 
+    <title>Artificially Intelligent Javascript System / Test</title>
+
+    <script src="https://unpkg.com/dexie/dist/dexie.js"></script>
+    <script src="https://unpkg.com/meyda/dist/web/meyda.min.js"></script>
+    <script src="https://unpkg.com/rxjs/bundles/rxjs.umd.min.js"></script>
+    <script src="https://unpkg.com/natural/lib/natural.js"></script>
+    <script src="https://unpkg.com/synaptic"></script>
     <script src="https://unpkg.com/brain.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://unpkg.com/ml5@1.2.1/dist/ml5.min.js"></script>
     <script src="https://unpkg.com/compromise"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@nlpjs/nlp@4.27.0/dist/bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
 
     <style>
         :root {
@@ -82,15 +93,47 @@
     }
 
     // Training with more diversity to prevent false positives
-    const trainingData = [
-        { input: encode("hello hi hey greetings"), output: { greet: 1 } },
-        { input: encode("how are you status system check"), output: { status: 1 } },
-        { input: encode("help manual commands what can you do"), output: { help: 1 } },
-        { input: encode("bye exit quit goodbye"), output: { bye: 1 } },
-        { input: encode("who are you identity name"), output: { identity: 1 } }
-    ];
+const trainingData = [];
 
-    net.train(trainingData);
+// GREET
+["hello", "hi", "hey", "greetings"].forEach(word => {
+    trainingData.push({ input: encode(word), output: { greet: 1 } });
+});
+
+// STATUS
+["how are you", "status", "system check"].forEach(phrase => {
+    trainingData.push({ input: encode(phrase), output: { status: 1 } });
+});
+
+// HELP
+["help", "commands", "what can you do", "manual"].forEach(phrase => {
+    trainingData.push({ input: encode(phrase), output: { help: 1 } });
+});
+
+// IDENTITY
+["who are you", "your name", "identity"].forEach(phrase => {
+    trainingData.push({ input: encode(phrase), output: { identity: 1 } });
+});
+
+// BYE
+["bye", "goodbye", "exit", "quit"].forEach(word => {
+    trainingData.push({ input: encode(word), output: { bye: 1 } });
+});
+
+
+    net.train(trainingData, {
+    iterations: 2000,
+    errorThresh: 0.005,
+    learningRate: 0.3
+});
+
+    
+    net.train(trainingData, {
+    iterations: 2000,
+    errorThresh: 0.005,
+    log: false
+});
+
 
     const responses = {
         greet: ["Hello there!", "Hi! How's your day going?", "Greetings!"],
@@ -131,7 +174,7 @@
         let reply = "";
         if (foundName) {
             reply = `Nice to meet you, ${foundName}!`;
-        } else if (highestScore > 0.5) {
+        } else if (highestScore > 0.2) {
             const possible = responses[prediction];
             reply = possible[Math.floor(Math.random() * possible.length)];
         } else {
@@ -144,7 +187,10 @@
             display.innerHTML += `
                 <div style="display:flex; flex-direction:column">
                     <div class="bubble bot">${reply}</div>
-                    <div class="system-meta">Confidence: ${conf}% | Intent: ${prediction}</div>
+                    <div class="system-meta">
+    Confidence: ${conf}% | Intent: ${highestScore > 0.2 ? prediction : "uncertain"}
+</div>
+
                 </div>`;
             display.scrollTop = display.scrollHeight;
         }, 600);
