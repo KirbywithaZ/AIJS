@@ -83,6 +83,15 @@
 </div>
 
 <script>
+
+    let lastBotIntent = null; // remembers last bot intent
+
+    function isFollowUp(text) {
+    // Short messages referencing previous conversation
+    return text.split(" ").length <= 3 &&
+           /you\?|and you|what about you|yourself/i.test(text);
+}
+    
     const net = new brain.NeuralNetwork();
     
     function encode(text) {
@@ -134,7 +143,6 @@ const trainingData = [];
     log: false
 });
 
-
     const responses = {
         greet: ["Hello there!", "Hi! How's your day going?", "Greetings!"],
         status: ["All systems nominal.", "I'm running smoothly.", "Everything is working perfectly!"],
@@ -172,14 +180,33 @@ const trainingData = [];
 
         // 3. LOGIC HIERARCHY
         let reply = "";
-        if (foundName) {
-            reply = `Nice to meet you, ${foundName}!`;
-        } else if (highestScore > 0.2) {
-            const possible = responses[prediction];
-            reply = possible[Math.floor(Math.random() * possible.length)];
-        } else {
-            reply = responses.fallback[Math.floor(Math.random() * responses.fallback.length)];
-        }
+
+// CONTEXTUAL FOLLOW-UP
+if (isFollowUp(text) && lastBotIntent === "status") {
+    reply = responses.status[Math.floor(Math.random() * responses.status.length)];
+    prediction = "status";
+    highestScore = 0.9;
+}
+
+// NAME DETECTION (OVERRIDES EVERYTHING)
+else if (foundName) {
+    reply = `Nice to meet you, ${foundName}!`;
+    prediction = "identity";
+    highestScore = 0.9;
+}
+
+// NORMAL INTENT RESPONSE
+else if (highestScore > 0.2 && responses[prediction]) {
+    const possible = responses[prediction];
+    reply = possible[Math.floor(Math.random() * possible.length)];
+}
+
+// FALLBACK
+else {
+    reply = responses.fallback[Math.floor(Math.random() * responses.fallback.length)];
+    prediction = "uncertain";
+    highestScore = 0;
+}
 
         // Add Bot Bubble with Metadata
         setTimeout(() => {
@@ -193,6 +220,7 @@ const trainingData = [];
 
                 </div>`;
             display.scrollTop = display.scrollHeight;
+            lastBotIntent = prediction;
         }, 600);
     }
 
