@@ -97,6 +97,22 @@ function isMathQuestion(text) {
     return /\d+|\+|\-|\*|\/|plus|minus|times|divided|take away/i.test(text);
 }
 
+// Parse English phrases to math expressions
+function parseWordMath(text) {
+    const numbers = text.match(/\d+/g)?.map(Number);
+    if (!numbers || numbers.length < 2) return null;
+
+    let op = null;
+    if (/plus/i.test(text)) op = "+";
+    else if (/minus|take away/i.test(text)) op = "-";
+    else if (/times/i.test(text)) op = "*";
+    else if (/divided by/i.test(text)) op = "/";
+
+    if (!op) return null;
+
+    return `${numbers[0]} ${op} ${numbers[1]}`;
+}
+
 const net = new brain.NeuralNetwork();
 
 function encode(text) {
@@ -161,7 +177,7 @@ async function handleChat() {
     display.innerHTML += `<div class="bubble user">${text}</div>`;
     input.value = '';
 
-    // 1️⃣ Name detection
+    // Name detection
     let doc = nlp(text);
     let foundName = doc.people().out('array')[0];
 
@@ -169,27 +185,28 @@ async function handleChat() {
     let prediction = "unknown";
     let highestScore = 0;
 
-    // 2️⃣ Math detection
+    // Math detection with parser
     if (isMathQuestion(text)) {
-        try {
-            let sanitized = text
-                .replace(/plus/gi, "+")
-                .replace(/minus|take away/gi, "-")
-                .replace(/times/gi, "*")
-                .replace(/divided by/gi, "/");
-
-            let result = math.evaluate(sanitized);
-            reply = `The answer is ${result}.`;
-            prediction = "math";
-            highestScore = 1;
-        } catch(e) {
+        const expr = parseWordMath(text);
+        if (expr) {
+            try {
+                const result = math.evaluate(expr);
+                reply = `The answer is ${result}.`;
+                prediction = "math";
+                highestScore = 1;
+            } catch(e) {
+                reply = "I can't solve that one yet, but I'm learning!";
+                prediction = "math";
+                highestScore = 0;
+            }
+        } else {
             reply = "I can't solve that one yet, but I'm learning!";
             prediction = "math";
             highestScore = 0;
         }
     }
 
-    // 3️⃣ Follow-up logic
+    // Follow-up logic
     else if (isFollowUp(text) && lastBotIntent) {
         if (lastBotIntent === "greet") {
             reply = responses.status[Math.floor(Math.random() * responses.status.length)];
@@ -202,14 +219,14 @@ async function handleChat() {
         }
     }
 
-    // 4️⃣ Name overrides
+    // Name overrides
     else if (foundName) {
         reply = `Nice to meet you, ${foundName}!`;
         prediction = "identity";
         highestScore = 0.9;
     }
 
-    // 5️⃣ Neural network intent
+    // Neural network intent
     else {
         const results = net.run(encode(text));
         for (let intent in results) {
@@ -228,7 +245,7 @@ async function handleChat() {
         }
     }
 
-    // 6️⃣ Bot bubble
+    // Bot bubble
     setTimeout(() => {
         const conf = Math.round(highestScore * 100);
         display.innerHTML += `
@@ -238,7 +255,7 @@ async function handleChat() {
             </div>`;
         display.scrollTop = display.scrollHeight;
 
-        // 7️⃣ Update last bot intent for context
+        // Update last bot intent
         lastBotIntent = prediction;
     }, 600);
 }
