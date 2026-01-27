@@ -87,9 +87,8 @@
     let lastBotIntent = null; // remembers last bot intent
 
     function isFollowUp(text) {
-    // Short messages referencing previous conversation
-    return text.split(" ").length <= 3 &&
-           /you\?|and you|what about you|yourself/i.test(text);
+    return text.split(" ").length <= 5 &&
+           /(and you|you\?|what about you|yourself|are you sure|how are you)/i.test(text);
 }
     
     const net = new brain.NeuralNetwork();
@@ -182,10 +181,16 @@ const trainingData = [];
         let reply = "";
 
 // CONTEXTUAL FOLLOW-UP
-if (isFollowUp(text) && lastBotIntent === "status") {
-    reply = responses.status[Math.floor(Math.random() * responses.status.length)];
-    prediction = "status";
-    highestScore = 0.9;
+if (isFollowUp(text) && lastBotIntent) {
+    if (lastBotIntent === "greet") {
+        reply = responses.status[Math.floor(Math.random() * responses.status.length)];
+        prediction = "status";
+        highestScore = 0.8;
+    } else if (lastBotIntent === "status") {
+        reply = responses.status[Math.floor(Math.random() * responses.status.length)];
+        prediction = "status";
+        highestScore = 0.8;
+    }
 }
 
 // NAME DETECTION (OVERRIDES EVERYTHING)
