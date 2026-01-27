@@ -3,72 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIJS - Artificially Intelligent Javascript System</title>
+    <title>AIJS - Modern Chatbot</title>
 
     <script src="https://unpkg.com/brain.js"></script>
     <script src="https://unpkg.com/compromise"></script>
 
     <style>
-        * { box-sizing: border-box; }
+        :root {
+            --bg-color: #f0f2f5;
+            --bot-bubble: #ffffff;
+            --user-bubble: #0084ff;
+            --text-main: #1c1e21;
+            --text-alt: #65676b;
+        }
+
         body { 
-            background: #0a0a0a; color: #00ff41; 
-            font-family: 'Courier New', monospace; 
-            display: flex; justify-content: center; align-items: center; 
-            height: 100vh; margin: 0; overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh;
         }
-        #aijs-container { 
-            width: 95%; max-width: 800px; height: 85vh; 
-            border: 2px solid #00ff41; display: flex; flex-direction: column; 
-            background: #000; box-shadow: 0 0 20px #004400; 
+
+        #chat-container {
+            width: 100%; max-width: 450px; height: 90vh;
+            background: #fff; display: flex; flex-direction: column;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.12); border-radius: 12px; overflow: hidden;
         }
-        #header { 
-            padding: 15px; border-bottom: 1px solid #00ff41; 
-            text-align: center; font-weight: bold; font-size: 1.2em; 
-            background: #050505; letter-spacing: 3px;
-        }
+
+        #header { padding: 15px; background: #fff; border-bottom: 1px solid #ddd; text-align: center; font-weight: bold; color: var(--text-main); }
+
         #display { 
             flex-grow: 1; overflow-y: auto; padding: 20px; 
-            font-size: 14px; scroll-behavior: smooth;
+            display: flex; flex-direction: column; gap: 12px;
+            background: #e5ddd5; /* Classic chat background */
         }
-        .input-area { display: flex; border-top: 1px solid #00ff41; background: #050505; }
-        #user-input { 
-            flex-grow: 1; background: transparent; border: none; 
-            color: #fff; padding: 20px; outline: none; 
-            font-family: inherit; font-size: 16px;
+
+        .bubble { 
+            max-width: 80%; padding: 10px 14px; border-radius: 18px; 
+            font-size: 15px; line-height: 1.4; position: relative;
         }
-        #send-btn { 
-            background: #00ff41; color: #000; border: none; 
-            padding: 0 30px; cursor: pointer; font-weight: bold;
-            transition: 0.3s;
+
+        .bot { align-self: flex-start; background: var(--bot-bubble); color: var(--text-main); border-bottom-left-radius: 4px; }
+        .user { align-self: flex-end; background: var(--user-bubble); color: #fff; border-bottom-right-radius: 4px; }
+
+        .system-meta { font-size: 10px; color: var(--text-alt); margin-top: 4px; align-self: flex-start; }
+
+        .input-area { padding: 15px; background: #fff; display: flex; gap: 10px; border-top: 1px solid #ddd; }
+        input { 
+            flex-grow: 1; border: 1px solid #ddd; border-radius: 20px; 
+            padding: 10px 15px; outline: none; font-size: 15px;
         }
-        #send-btn:hover { background: #fff; }
-        .bot-msg { color: #00ff41; margin-bottom: 15px; line-height: 1.4; }
-        .user-msg { color: #888; margin-bottom: 15px; }
-        .system-note { color: #ffff00; font-size: 10px; margin-bottom: 10px; text-transform: uppercase; }
-        
-        /* Scrollbar */
-        #display::-webkit-scrollbar { width: 6px; }
-        #display::-webkit-scrollbar-thumb { background: #00ff41; }
+        button { 
+            background: var(--user-bubble); color: white; border: none; 
+            padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600;
+        }
     </style>
 </head>
 <body>
 
-<div id="aijs-container">
-    <div id="header">AIJS // CORE_TERMINAL</div>
+<div id="chat-container">
+    <div id="header">AIJS Assistant</div>
     <div id="display">
-        <div class="bot-msg">AIJS: [SYSTEM READY] - Awaiting instructions...</div>
+        <div class="bubble bot">Hi! I'm AIJS. How can I help you today?</div>
     </div>
     <div class="input-area">
-        <input type="text" id="user-input" placeholder="Type command..." autofocus autocomplete="off">
-        <button id="send-btn">RUN</button>
+        <input type="text" id="user-input" placeholder="Message..." autocomplete="off">
+        <button id="send-btn">Send</button>
     </div>
 </div>
 
 <script>
-    // 1. BRAIN.JS SETUP (Intent Classification)
     const net = new brain.NeuralNetwork();
     
-    // We convert text into a word-count object for the Neural Net
     function encode(text) {
         const words = text.toLowerCase().replace(/[^\w\s]/g, '').split(' ');
         const obj = {};
@@ -76,69 +81,77 @@
         return obj;
     }
 
-    // Training Data: Intent Mapping
+    // Training with more diversity to prevent false positives
     const trainingData = [
         { input: encode("hello hi hey greetings"), output: { greet: 1 } },
-        { input: encode("how are you status check"), output: { status: 1 } },
-        { input: encode("who are you identity"), output: { identity: 1 } },
-        { input: encode("help manual commands"), output: { help: 1 } },
-        { input: encode("bye exit quit"), output: { bye: 1 } }
+        { input: encode("how are you status system check"), output: { status: 1 } },
+        { input: encode("help manual commands what can you do"), output: { help: 1 } },
+        { input: encode("bye exit quit goodbye"), output: { bye: 1 } },
+        { input: encode("who are you identity name"), output: { identity: 1 } }
     ];
 
     net.train(trainingData);
 
-    // 2. RESPONSE DICTIONARY
     const responses = {
-        greet: ["Connection established. Hello.", "Greetings, User.", "AIJS is online and listening."],
-        status: ["All systems operational. Memory usage stable.", "Core temperature nominal. 100% capacity.", "Status: Optimal."],
-        identity: ["I am AIJS: The Artificially Intelligent Javascript System.", "I am a browser-based intelligence built on JS."],
-        help: ["COMMANDS: [STATUS], [IDENTITY], [NAME DETECTION]. Try: 'My name is Alex'"],
-        bye: ["Terminating session. Goodbye.", "Going to standby mode.", "System out."],
-        unknown: ["Input not recognized. Expanding data parameters...", "Query does not match known patterns."]
+        greet: ["Hello there!", "Hi! How's your day going?", "Greetings!"],
+        status: ["All systems nominal.", "I'm running smoothly.", "Everything is working perfectly!"],
+        help: ["I can recognize names and chat with you. Try saying 'My name is John' or asking how I am."],
+        identity: ["I am AIJS, a browser-based AI system.", "You're talking to a JavaScript-powered intelligence."],
+        bye: ["Goodbye! Have a great day.", "See you later!", "Shutting down. Bye!"],
+        fallback: ["I'm not quite sure what you mean. Could you rephrase?", "Hmm, I didn't get that. Can you try saying it differently?"]
     };
 
-    const display = document.getElementById('display');
-    const input = document.getElementById('user-input');
-    const btn = document.getElementById('send-btn');
-
-    async function handleCommunication() {
+    async function handleChat() {
+        const input = document.getElementById('user-input');
+        const display = document.getElementById('display');
         const text = input.value.trim();
         if (!text) return;
 
-        // Display User input
-        display.innerHTML += `<div class="user-msg">> ${text}</div>`;
+        // Add User Bubble
+        display.innerHTML += `<div class="bubble user">${text}</div>`;
         input.value = '';
 
-        // A. Linguistic Extraction (Compromise.js)
+        // 1. LINGUISTICS
         let doc = nlp(text);
-        let foundName = doc.people().text();
+        let foundName = doc.people().out('array')[0];
 
-        // B. Intent Prediction (Brain.js)
-        const prediction = brain.likely(encode(text), net);
-        
-        let finalReply = "";
+        // 2. BRAIN CONFIDENCE
+        const results = net.run(encode(text));
+        let highestScore = 0;
+        let prediction = 'unknown';
 
-        // Logic Hierarchy
-        if (text.toLowerCase() === 'help') {
-            finalReply = responses.help[0];
-        } else if (foundName) {
-            finalReply = `Linguistic analysis complete. Entity detected: [${foundName}]. Hello, ${foundName}.`;
-        } else {
-            const possible = responses[prediction] || responses.unknown;
-            finalReply = possible[Math.floor(Math.random() * possible.length)];
+        for (let intent in results) {
+            if (results[intent] > highestScore) {
+                highestScore = results[intent];
+                prediction = intent;
+            }
         }
 
-        // Output with delay
+        // 3. LOGIC HIERARCHY
+        let reply = "";
+        if (foundName) {
+            reply = `Nice to meet you, ${foundName}!`;
+        } else if (highestScore > 0.5) {
+            const possible = responses[prediction];
+            reply = possible[Math.floor(Math.random() * possible.length)];
+        } else {
+            reply = responses.fallback[Math.floor(Math.random() * responses.fallback.length)];
+        }
+
+        // Add Bot Bubble with Metadata
         setTimeout(() => {
-            display.innerHTML += `<div class="system-note">Processing intent: ${prediction || 'null'}</div>`;
-            display.innerHTML += `<div class="bot-msg">AIJS: ${finalReply}</div>`;
+            const conf = Math.round(highestScore * 100);
+            display.innerHTML += `
+                <div style="display:flex; flex-direction:column">
+                    <div class="bubble bot">${reply}</div>
+                    <div class="system-meta">Confidence: ${conf}% | Intent: ${prediction}</div>
+                </div>`;
             display.scrollTop = display.scrollHeight;
-        }, 500);
+        }, 600);
     }
 
-    // Listeners
-    btn.onclick = handleCommunication;
-    input.onkeypress = (e) => { if (e.key === 'Enter') handleCommunication(); };
+    document.getElementById('send-btn').onclick = handleChat;
+    document.getElementById('user-input').onkeypress = (e) => { if(e.key === 'Enter') handleChat(); };
 </script>
 
 </body>
